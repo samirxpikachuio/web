@@ -173,7 +173,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const loadingOverlay = document.getElementById("loading-overlay");
 
         try {
-            const swaggerUrl = "/swagger.json";
+            const swaggerUrl = "/api/openapi.json";
 
             const response = await fetch(swaggerUrl);
             if (!response.ok) {
