@@ -1535,6 +1535,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    /**
+     * MODIFIED: This function now handles binary data (images, audio, video).
+     * It checks the `Content-Type` header to decide how to process the response body.
+     */
     async function executeApiRequest(method, url, headers, body) {
         try {
             const options = {
@@ -1554,8 +1558,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             let responseData;
             const contentType = response.headers.get("content-type");
+            
             if (contentType && contentType.includes("application/json")) {
                 responseData = await response.json();
+            } else if (contentType && (contentType.startsWith("image/") || contentType.startsWith("audio/") || contentType.startsWith("video/"))) {
+                responseData = await response.blob();
             } else {
                 responseData = await response.text();
             }
@@ -1570,7 +1577,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 statusText: response.statusText,
                 headers: responseHeaders,
                 data: responseData,
-                duration: duration
+                duration: duration,
+                contentType: contentType // Pass content type along for rendering
             };
         } catch (error) {
             throw {
@@ -1597,6 +1605,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    /**
+     * MODIFIED: This function now renders media elements (`<img>`, `<audio>`, `<video>`) or text
+     * based on the `Content-Type` of the API response.
+     */
     function executeRequest(executeBtn, endpointCard) {
         const requiredInputs = endpointCard.querySelectorAll(
             '.parameter-input[data-required="true"], .parameter-select[data-required="true"]'
@@ -1624,15 +1636,11 @@ document.addEventListener("DOMContentLoaded", function () {
         executeBtn.disabled = true;
 
         const responseSection = endpointCard.querySelector(".try-it-response");
-        const responseViewer = endpointCard.querySelector(".response-viewer");
-        const responseHeadersViewer = endpointCard.querySelector(
-            ".response-headers-viewer"
-        );
-        const responseCurlViewer = endpointCard.querySelector(
-            ".response-curl-viewer"
-        );
+        const responseHeadersViewer = endpointCard.querySelector(".response-headers-viewer");
+        const responseCurlViewer = endpointCard.querySelector(".response-curl-viewer");
         const responseStatus = endpointCard.querySelector(".response-status");
         const responseTime = endpointCard.querySelector(".response-time");
+        const responseBodyDiv = endpointCard.querySelector(".response-body");
 
         const method = endpointCard.querySelector(".method-tag").textContent;
         const path = endpointCard.querySelector(".endpoint-path").textContent;
@@ -1712,32 +1720,48 @@ document.addEventListener("DOMContentLoaded", function () {
         executeApiRequest(method, url, headers, body)
             .then(result => {
                 responseSection.classList.remove("hidden");
-
-                if (typeof result.data === "object") {
-                    responseViewer.textContent = JSON.stringify(
-                        result.data,
-                        null,
-                        2
-                    );
+                
+                // Dynamically render the response body based on content type
+                if (result.contentType && result.contentType.startsWith("image/")) {
+                    const imageUrl = URL.createObjectURL(result.data);
+                    responseBodyDiv.innerHTML = `
+                        <h5 class="response-subtitle">Response body</h5>
+                        <img src="${imageUrl}" style="max-width: 100%; border-radius: 4px; margin-top: 8px;" alt="API Response Image">
+                    `;
+                } else if (result.contentType && result.contentType.startsWith("audio/")) {
+                    const audioUrl = URL.createObjectURL(result.data);
+                    responseBodyDiv.innerHTML = `
+                        <h5 class="response-subtitle">Response body</h5>
+                        <audio controls src="${audioUrl}" style="width: 100%; margin-top: 8px;"></audio>
+                    `;
+                } else if (result.contentType && result.contentType.startsWith("video/")) {
+                    const videoUrl = URL.createObjectURL(result.data);
+                    responseBodyDiv.innerHTML = `
+                        <h5 class="response-subtitle">Response body</h5>
+                        <video controls src="${videoUrl}" style="max-width: 100%; border-radius: 4px; margin-top: 8px;"></video>
+                    `;
                 } else {
-                    responseViewer.textContent = result.data;
+                    const responseText = (typeof result.data === "object")
+                        ? JSON.stringify(result.data, null, 2)
+                        : result.data;
+
+                    responseBodyDiv.innerHTML = `
+                        <h5 class="response-subtitle">Response body</h5>
+                        <div class="code-editor-container">
+                            <pre class="code-editor response-viewer"></pre>
+                            <button class="copy-response-btn">
+                                <i class="far fa-copy"></i>
+                            </button>
+                        </div>
+                    `;
+                    responseBodyDiv.querySelector(".response-viewer").textContent = responseText;
                 }
 
-                responseHeadersViewer.textContent = JSON.stringify(
-                    result.headers,
-                    null,
-                    2
-                );
+                responseHeadersViewer.textContent = JSON.stringify(result.headers, null, 2);
                 responseCurlViewer.textContent = curlCommand;
 
                 responseStatus.textContent = `${result.status} ${result.statusText}`;
-                responseStatus.className =
-                    "response-status " +
-                    (result.status < 300
-                        ? "success"
-                        : result.status < 400
-                        ? "warning"
-                        : "error");
+                responseStatus.className = "response-status " + (result.status < 300 ? "success" : result.status < 400 ? "warning" : "error");
 
                 responseTime.textContent = `(${result.duration}ms)`;
 
@@ -1745,23 +1769,28 @@ document.addEventListener("DOMContentLoaded", function () {
                 executeBtn.disabled = false;
                 executeBtn.classList.remove("loading");
 
-                responseSection.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
+                responseSection.scrollIntoView({ behavior: "smooth", block: "start" });
             })
             .catch(error => {
                 responseSection.classList.remove("hidden");
 
-                responseViewer.textContent = JSON.stringify(
-                    {
-                        error: "Request Failed",
-                        message: error.message,
-                        details: error.details || null
-                    },
-                    null,
-                    2
-                );
+                const errorText = JSON.stringify({
+                    error: "Request Failed",
+                    message: error.message,
+                    details: error.details || null
+                }, null, 2);
+
+                // Ensure the response body container is reset to show text for errors
+                responseBodyDiv.innerHTML = `
+                    <h5 class="response-subtitle">Response body</h5>
+                    <div class="code-editor-container">
+                        <pre class="code-editor response-viewer"></pre>
+                        <button class="copy-response-btn">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </div>
+                `;
+                responseBodyDiv.querySelector(".response-viewer").textContent = errorText;
 
                 responseHeadersViewer.textContent = "{}";
                 responseCurlViewer.textContent = curlCommand;
@@ -1775,10 +1804,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 executeBtn.disabled = false;
                 executeBtn.classList.remove("loading");
 
-                responseSection.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
+                responseSection.scrollIntoView({ behavior: "smooth", block: "start" });
             });
     }
 });
