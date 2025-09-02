@@ -211,137 +211,141 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    function transformSwaggerToInternalFormat(swagger) {
-        const fullSwagger = swagger;
 
-        const categories = (swagger.tags || []).map(tag => ({
-            name: tag.name,
-            description: tag.description || "",
-            icon: "fa-tag",
-            endpoints: []
-        }));
+function transformSwaggerToInternalFormat(swagger) {
+    const fullSwagger = swagger;
+    
+    const categories = [];
+    const categoryMap = new Map(); 
 
-        if (categories.length === 0) {
-            categories.push({
-                name: "Default",
-                description: "API Endpoints",
-                icon: "fa-globe",
-                endpoints: []
-            });
-        }
-
-        for (const [path, pathItem] of Object.entries(swagger.paths)) {
-            for (const [method, operation] of Object.entries(pathItem)) {
-                if (method === "parameters") continue;
-
-                const endpoint = {
-                    path: path,
-                    method: method.toUpperCase(),
-                    summary: operation.summary || "",
-                    description: operation.description || "",
-                    parameters: [],
-                    responses: [],
-                    bodySchema: null,
-                    swaggerVersion: swagger.swagger || swagger.openapi || "2.0"
+    if (swagger.tags) {
+        swagger.tags.forEach(tag => {
+            if (!categoryMap.has(tag.name)) {
+                const newCategory = {
+                    name: tag.name,
+                    description: tag.description || "",
+                    icon: "fa-tag", 
+                    endpoints: []
                 };
-
-                if (operation.requestBody) {
-                    const content = operation.requestBody.content || {};
-                    const jsonContent = content["application/json"] || {};
-
-                    if (jsonContent.schema) {
-                        endpoint.bodySchema = jsonContent.schema;
-
-                        endpoint.parameters.push({
-                            name: "body",
-                            in: "body",
-                            type: "object",
-                            required: operation.requestBody.required || false,
-                            description:
-                                operation.requestBody.description ||
-                                "Request body",
-                            schema: jsonContent.schema
-                        });
-                    }
-                }
-
-                const pathParams = pathItem.parameters || [];
-                const operationParams = operation.parameters || [];
-                const allParams = [...pathParams, ...operationParams];
-
-                allParams.forEach(param => {
-                    if (param.$ref) {
-                        param =
-                            resolveSchemaRef(param.$ref, fullSwagger) || param;
-                    }
-
-                    let paramSchema = param.schema || {};
-                    let paramType = paramSchema.type || param.type || "string";
-
-                    if (param.in === "body" && param.schema) {
-                        endpoint.bodySchema = param.schema;
-                    }
-
-                    endpoint.parameters.push({
-                        name: param.name,
-                        in: param.in,
-                        type: paramType,
-                        required: param.required || false,
-                        description: param.description || "",
-                        enum: paramSchema.enum || param.enum,
-                        example: param.example || paramSchema.example,
-                        schema: param.schema
-                    });
-                });
-
-                for (const [statusCode, response] of Object.entries(
-                    operation.responses || {}
-                )) {
-                    let example = "{}";
-                    let schema = response.schema;
-
-                    if (
-                        response.content &&
-                        response.content["application/json"]
-                    ) {
-                        schema = response.content["application/json"].schema;
-                    }
-
-                    if (schema) {
-                        const generatedExample = generateExampleFromSchema(
-                            schema,
-                            fullSwagger
-                        );
-                        example = JSON.stringify(generatedExample, null, 2);
-                    }
-
-                    endpoint.responses.push({
-                        status: parseInt(statusCode, 10) || 200,
-                        description: response.description || "",
-                        example: example
-                    });
-                }
-
-                const categoryName =
-                    operation.tags && operation.tags.length > 0
-                        ? operation.tags[0]
-                        : "Default";
-
-                const category =
-                    categories.find(c => c.name === categoryName) ||
-                    categories[0];
-                category.endpoints.push(endpoint);
+                categories.push(newCategory);
+                categoryMap.set(tag.name, newCategory);
             }
-        }
-
-        return {
-            description: swagger.info?.description || "",
-            version: swagger.info?.version || "1.0.0",
-            title: swagger.info?.title || "API Documentation",
-            categories: categories,
-            swaggerDoc: fullSwagger
-        };
+        });
     }
+
+    for (const [path, pathItem] of Object.entries(swagger.paths)) {
+        for (const [method, operation] of Object.entries(pathItem)) {
+            if (!['get', 'post', 'put', 'delete', 'patch', 'options', 'head'].includes(method.toLowerCase())) continue;
+
+            const endpoint = {
+                path: path,
+                method: method.toUpperCase(),
+                summary: operation.summary || "",
+                description: operation.description || "",
+                parameters: [],
+                responses: [],
+                bodySchema: null,
+                swaggerVersion: swagger.swagger || swagger.openapi || "2.0"
+            };
+
+            if (operation.requestBody) {
+                const content = operation.requestBody.content || {};
+                const jsonContent = content["application/json"] || {};
+
+                if (jsonContent.schema) {
+                    endpoint.bodySchema = jsonContent.schema;
+                    endpoint.parameters.push({
+                        name: "body",
+                        in: "body",
+                        type: "object",
+                        required: operation.requestBody.required || false,
+                        description: operation.requestBody.description || "Request body",
+                        schema: jsonContent.schema
+                    });
+                }
+            }
+
+            const pathParams = pathItem.parameters || [];
+            const operationParams = operation.parameters || [];
+            const allParams = [...pathParams, ...operationParams];
+
+            allParams.forEach(param => {
+                if (param.$ref) {
+                    param = resolveSchemaRef(param.$ref, fullSwagger) || param;
+                }
+                let paramSchema = param.schema || {};
+                let paramType = paramSchema.type || param.type || "string";
+                if (param.in === "body" && param.schema) {
+                    endpoint.bodySchema = param.schema;
+                }
+                endpoint.parameters.push({
+                    name: param.name,
+                    in: param.in,
+                    type: paramType,
+                    required: param.required || false,
+                    description: param.description || "",
+                    enum: paramSchema.enum || param.enum,
+                    example: param.example || paramSchema.example,
+                    schema: param.schema
+                });
+            });
+
+            for (const [statusCode, response] of Object.entries(operation.responses || {})) {
+                let example = "{}";
+                let schema = response.schema;
+                if (response.content && response.content["application/json"]) {
+                    schema = response.content["application/json"].schema;
+                }
+                if (schema) {
+                    const generatedExample = generateExampleFromSchema(schema, fullSwagger);
+                    example = JSON.stringify(generatedExample, null, 2);
+                }
+                endpoint.responses.push({
+                    status: parseInt(statusCode, 10) || 200,
+                    description: response.description || "",
+                    example: example
+                });
+            }
+
+            const categoryName = (operation.tags && operation.tags.length > 0) ? operation.tags[0] : "Default";
+
+            let category = categoryMap.get(categoryName);
+
+            
+            if (!category) {
+                category = {
+                    name: categoryName,
+                    description: `Endpoints related to ${categoryName}`, 
+                    icon: "fa-tag",
+                    endpoints: []
+                };
+                categories.push(category);
+                categoryMap.set(categoryName, category);
+            }
+            
+            
+            category.endpoints.push(endpoint);
+            
+        }
+    }
+    
+    if (categories.length === 0) {
+        categories.push({
+            name: "Default",
+            description: "API Endpoints",
+            icon: "fa-globe",
+            endpoints: []
+        });
+    }
+
+    return {
+        description: swagger.info?.description || "",
+        version: swagger.info?.version || "1.0.0",
+        title: swagger.info?.title || "API Documentation",
+        categories: categories,
+        swaggerDoc: fullSwagger
+    };
+}
 
     function setupSearch(apiData) {
         if (searchInput) {
