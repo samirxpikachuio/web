@@ -57,7 +57,7 @@ body {
   position: relative; /* Needed for pseudo-elements */
 }
 
-/* Star layers */
+/* Star layers - Brighter & Denser */
 body::before,
 body::after {
   content: "";
@@ -73,28 +73,29 @@ body::after {
 
 /* Layer 1: Smaller, faster stars */
 body::before {
-  background-image: radial-gradient(1px 1px at 20px 30px, #fff, transparent),
+  background-image: radial-gradient(1.2px 1.2px at 20px 30px, #fff, transparent),
     radial-gradient(1px 1px at 80px 120px, #fff, transparent),
     radial-gradient(1.5px 1.5px at 150px 250px, #fff, transparent),
     radial-gradient(1px 1px at 300px 400px, #fff, transparent),
     radial-gradient(1.2px 1.2px at 500px 100px, #fff, transparent),
-    radial-gradient(1px 1px at 600px 350px, #fff, transparent);
-  background-size: 700px 700px;
-  animation: animateStars 60s linear infinite;
-  opacity: 0.8;
+    radial-gradient(1.5px 1.5px at 600px 350px, #fff, transparent);
+  background-size: 650px 650px;
+  animation: animateStars 50s linear infinite;
+  opacity: 1; /* Increased brightness */
 }
 
 /* Layer 2: Larger, slower stars */
 body::after {
   background-image: radial-gradient(2px 2px at 50px 150px, #fff, transparent),
     radial-gradient(2.5px 2.5px at 200px 50px, #fff, transparent),
-    radial-gradient(2px 2px at 400px 400px, #fff, transparent),
+    radial-gradient(2.5px 2.5px at 400px 400px, #fff, transparent),
     radial-gradient(3px 3px at 550px 250px, #fff, transparent),
     radial-gradient(2px 2px at 700px 500px, #fff, transparent);
-  background-size: 800px 800px;
-  animation: animateStars 120s linear infinite;
-  opacity: 0.5;
+  background-size: 750px 750px;
+  animation: animateStars 100s linear infinite;
+  opacity: 0.8; /* Increased brightness */
 }
+
 
 button,
 input,
@@ -122,10 +123,10 @@ a {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Scrollbar Styling */
+/* Scrollbar Styling with Neon Glow */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -134,23 +135,31 @@ a {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(161, 98, 247, 0.3); /* BTS Purple */
+  background: rgba(161, 98, 247, 0.4); /* BTS Purple */
   border-radius: 10px;
+  box-shadow: 0 0 8px rgba(161, 98, 247, 0.5); /* Neon Glow */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(161, 98, 247, 0.5); /* BTS Purple */
+  background: rgba(161, 98, 247, 0.6); /* BTS Purple */
+  box-shadow: 0 0 12px rgba(161, 98, 247, 0.8); /* Brighter Glow on hover */
+}
+
+/* --- Transparency & Frosted Glass --- */
+/* Add backdrop-filter to elements that need transparency */
+.header-gradient, .footer-gradient, .endpoint-card, .dialog-container, .search-input, .parameter-input, .parameter-select {
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 /* Gradient Backgrounds */
 .header-gradient {
-  background: linear-gradient(135deg, var(--surface) 0%, rgba(26, 26, 36, 0.8) 100%);
-  backdrop-filter: blur(10px);
+  background: linear-gradient(135deg, rgba(26, 26, 36, 0.6) 0%, rgba(26, 26, 36, 0.4) 100%); /* More transparent */
   border-bottom: 1px solid rgba(161, 98, 247, 0.1); /* BTS Purple */
 }
 
 .footer-gradient {
-  background: linear-gradient(135deg, var(--surface) 0%, rgba(26, 26, 36, 0.8) 100%);
+  background: linear-gradient(135deg, rgba(26, 26, 36, 0.6) 0%, rgba(26, 26, 36, 0.4) 100%); /* More transparent */
   border-top: 1px solid rgba(161, 98, 247, 0.1); /* BTS Purple */
 }
 
@@ -159,13 +168,14 @@ a {
     radial-gradient(circle at bottom left, rgba(255, 143, 180, 0.08) /* Pink */, transparent 70%);
 }
 
-/* Text Gradient */
+/* Text Gradient with Neon Glow */
 .text-gradient {
   background: linear-gradient(90deg, var(--primary), var(--secondary));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   display: inline-block;
+  text-shadow: 0 0 8px rgba(255, 143, 180, 0.5), 0 0 16px rgba(161, 98, 247, 0.5); /* Neon glow for text */
 }
 
 /* Header Styles */
@@ -229,7 +239,7 @@ a {
 }
 
 .search-input {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(26, 26, 36, 0.3); /* Transparent background */
   border: 1px solid rgba(161, 98, 247, 0.2); /* BTS Purple */
   color: var(--text);
   padding: 0.75rem 1rem 0.75rem 1rem;
@@ -241,8 +251,8 @@ a {
 
 .search-input:focus {
   border-color: var(--primary);
-  background: rgba(255, 255, 255, 0.07);
-  box-shadow: 0 0 0 3px rgba(161, 98, 247, 0.15); /* BTS Purple */
+  background: rgba(26, 26, 36, 0.5);
+  box-shadow: 0 0 8px rgba(161, 98, 247, 0.8), 0 0 16px rgba(161, 98, 247, 0.4); /* Intense Neon Glow on focus */
 }
 
 /* Category Tabs */
@@ -289,6 +299,7 @@ a {
   background: rgba(161, 98, 247, 0.15); /* BTS Purple */
   border-color: rgba(161, 98, 247, 0.4); /* BTS Purple */
   color: var(--primary);
+  box-shadow: 0 0 8px rgba(161, 98, 247, 0.5); /* Neon Glow for active tab */
 }
 
 .category-tab i {
@@ -298,13 +309,17 @@ a {
 
 /* Neon Buttons */
 .gradient-btn,
-.telegram-btn {
+.telegram-btn,
+.execute-btn,
+.dialog-confirm-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   padding: 0.75rem 1.5rem;
   border-radius: 50px; /* Pill shape */
   font-weight: 500;
   transition: all 0.3s var(--transition-bezier);
+  border: 1px solid rgba(255,255,255,0.2);
 }
 
 .gradient-btn {
@@ -410,10 +425,10 @@ a {
   color: var(--text-secondary);
 }
 
-/* Endpoint Card Styles */
+/* Endpoint Card Styles - More Transparent with Neon Hover */
 .endpoint-card {
-  background: rgba(26, 26, 36, 0.6);
-  border: 1px solid rgba(161, 98, 247, 0.1); /* BTS Purple */
+  background: rgba(26, 26, 36, 0.45); /* More Transparent */
+  border: 1px solid rgba(161, 98, 247, 0.15); /* BTS Purple */
   border-radius: 24px; /* More curve */
   overflow: hidden;
   transition: all 0.3s var(--transition-bezier);
@@ -422,9 +437,9 @@ a {
 }
 
 .endpoint-card:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  border-color: rgba(161, 98, 247, 0.2); /* BTS Purple */
-  transform: translateY(-2px);
+  border-color: rgba(161, 98, 247, 0.3); /* BTS Purple */
+  transform: translateY(-3px);
+  box-shadow: 0 0 20px -5px rgba(161, 98, 247, 0.3); /* Neon Glow on hover */
 }
 
 .endpoint-header {
@@ -571,6 +586,7 @@ a {
   height: 2px;
   background: var(--primary);
   animation: slideRight 0.3s var(--transition-bezier);
+  box-shadow: 0 0 8px var(--primary);
 }
 
 .tabs-content {
@@ -809,7 +825,7 @@ a {
 
 .parameter-input {
   width: 100%;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(26, 26, 36, 0.3);
   border: 1px solid rgba(161, 98, 247, 0.15); /* BTS Purple */
   color: var(--text);
   padding: 0.5rem 0.625rem;
@@ -821,8 +837,8 @@ a {
 
 .parameter-input:focus {
   border-color: var(--primary);
-  background: rgba(255, 255, 255, 0.07);
-  box-shadow: 0 0 0 2px rgba(161, 98, 247, 0.15); /* BTS Purple */
+  background: rgba(26, 26, 36, 0.5);
+  box-shadow: 0 0 8px rgba(161, 98, 247, 0.7), 0 0 12px rgba(161, 98, 247, 0.3);
 }
 
 .parameter-input.error {
@@ -832,7 +848,7 @@ a {
 
 .parameter-select {
   width: 100%;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(26, 26, 36, 0.3);
   border: 1px solid rgba(161, 98, 247, 0.15); /* BTS Purple */
   color: var(--text);
   padding: 0.5rem 0.625rem;
@@ -850,8 +866,8 @@ a {
 
 .parameter-select:focus {
   border-color: var(--primary);
-  background-color: rgba(255, 255, 255, 0.07);
-  box-shadow: 0 0 0 2px rgba(161, 98, 247, 0.15); /* BTS Purple */
+  background-color: rgba(26, 26, 36, 0.5);
+  box-shadow: 0 0 8px rgba(161, 98, 247, 0.7), 0 0 12px rgba(161, 98, 247, 0.3);
 }
 
 .code-editor-container {
@@ -879,15 +895,9 @@ a {
 }
 
 .execute-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   background: var(--primary);
   color: white;
-  padding: 0.625rem 1.25rem;
-  border-radius: 50px; /* Pill shape */
   font-weight: 500;
-  transition: all 0.2s var(--transition-bezier);
   width: 100%;
   max-width: 180px;
   margin-bottom: 1.25rem;
@@ -1294,7 +1304,7 @@ a {
   animation: spin 0.8s ease-in-out infinite;
 }
 
-/* Selection Dialog */
+/* Selection Dialog - More Transparent */
 .selection-dialog {
   position: fixed;
   top: 0;
@@ -1322,9 +1332,9 @@ a {
 }
 
 .dialog-container {
-  background: var(--surface);
+  background: rgba(26, 26, 36, 0.5); /* More Transparent */
   border-radius: 24px; /* More curve */
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), 0 0 30px rgba(161, 98, 247, 0.2); /* Added glow */
   width: 90%;
   max-width: 500px;
   position: relative;
@@ -1477,12 +1487,9 @@ a {
 }
 
 .dialog-confirm-btn {
-  padding: 0.5rem 1rem;
-  border-radius: 50px; /* Pill shape */
   background: var(--primary);
   color: white;
   font-weight: 500;
-  transition: all 0.2s var(--transition-bezier);
   box-shadow: 0 0 8px rgba(161, 98, 247, 0.6); /* Neon glow */
 }
 
