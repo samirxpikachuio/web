@@ -1,5 +1,6 @@
-
-:root   --secondary: #ff8fb4; /* Pink */
+:root {
+  --primary: #a162f7; /* BTS Purple */
+  --secondary: #ff8fb4; /* Pink */
   --accent: #f5d042; /* Gold */
   --background: #0f0f14; /* Darker background */
   --surface: #1a1a24; /* Slightly lighter surface */
@@ -26,54 +27,14 @@
   --transition-bezier: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* BTS Background Text */
-body::before {
-  content: "BTS";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 30vw;
-  font-weight: 900;
-  color: rgba(161, 98, 247, 0.03); /* Very light BTS Purple */
-  pointer-events: none;
-  z-index: -1;
-  letter-spacing: 0.1em;
-  font-family: "Poppins", sans-serif;
-}
-
-/* Ripple Button Effect */
-.ripple-btn {
-  position: relative;
-  overflow: hidden;
-  transform: translate3d(0, 0, 0);
-}
-
-.ripple-btn::after {
-  content: "";
-  display: block;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
-  background-repeat: no-repeat;
-  background-position: 50%;
-  transform: scale(10, 10);
-  opacity: 0;
-  transition: transform 0.5s, opacity 1s;
-}
-
-.ripple-btn:active::after {
-  transform: scale(0, 0);
-  opacity: 0.3;
-  transition: 0s;
+/* Starry Night Animation */
+@keyframes animateStars {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, -4000px, 0);
+  }
 }
 
 /* Base Styles */
@@ -93,6 +54,46 @@ body {
   color: var(--text);
   line-height: 1.6;
   overflow-x: hidden;
+  position: relative; /* Needed for pseudo-elements */
+}
+
+/* Star layers */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4000px; /* Taller than viewport for animation */
+  z-index: -1;
+  background-repeat: repeat;
+  will-change: transform;
+}
+
+/* Layer 1: Smaller, faster stars */
+body::before {
+  background-image: radial-gradient(1px 1px at 20px 30px, #fff, transparent),
+    radial-gradient(1px 1px at 80px 120px, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 150px 250px, #fff, transparent),
+    radial-gradient(1px 1px at 300px 400px, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 500px 100px, #fff, transparent),
+    radial-gradient(1px 1px at 600px 350px, #fff, transparent);
+  background-size: 700px 700px;
+  animation: animateStars 60s linear infinite;
+  opacity: 0.8;
+}
+
+/* Layer 2: Larger, slower stars */
+body::after {
+  background-image: radial-gradient(2px 2px at 50px 150px, #fff, transparent),
+    radial-gradient(2.5px 2.5px at 200px 50px, #fff, transparent),
+    radial-gradient(2px 2px at 400px 400px, #fff, transparent),
+    radial-gradient(3px 3px at 550px 250px, #fff, transparent),
+    radial-gradient(2px 2px at 700px 500px, #fff, transparent);
+  background-size: 800px 800px;
+  animation: animateStars 120s linear infinite;
+  opacity: 0.5;
 }
 
 button,
@@ -192,14 +193,14 @@ a {
   background: rgba(161, 98, 247, 0.1); /* BTS Purple */
   color: var(--text-secondary);
   padding: 0.5rem 1rem;
-  border-radius: 8px;
+  border-radius: 16px; /* More curve */
   font-size: 0.875rem;
 }
 
 /* Base URL Container */
 .base-url-container {
   background: rgba(0, 0, 0, 0.15);
-  border-radius: 8px;
+  border-radius: 16px; /* More curve */
   padding: 0.75rem 1rem;
   display: inline-flex;
   align-items: center;
@@ -210,7 +211,7 @@ a {
   background: rgba(161, 98, 247, 0.15); /* BTS Purple */
   width: 24px;
   height: 24px;
-  border-radius: 4px;
+  border-radius: 8px; /* More curve */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -232,7 +233,7 @@ a {
   border: 1px solid rgba(161, 98, 247, 0.2); /* BTS Purple */
   color: var(--text);
   padding: 0.75rem 1rem 0.75rem 1rem;
-  border-radius: 8px;
+  border-radius: 16px; /* More curve */
   width: 100%;
   transition: all 0.3s var(--transition-bezier);
   font-size: 1rem;
@@ -254,13 +255,6 @@ a {
 
 .category-tabs-container::-webkit-scrollbar {
   display: none;
-}
-
-.category-tabs {
-  display: flex;
-  gap: 0.75rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(161, 98, 247, 0.15); /* BTS Purple */
 }
 
 .category-tabs {
@@ -302,120 +296,39 @@ a {
   font-size: 0.875rem;
 }
 
-/* Gradient & Telegram Buttons */
+/* Neon Buttons */
 .gradient-btn,
 .telegram-btn {
   display: inline-flex;
   align-items: center;
-  padding: 0.625rem 1.25rem;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: all 0.2s var(--transition-bezier);
-}
-
-/* Update existing button styles */
-.gradient-btn,
-.telegram-btn,
-.execute-btn,
-.dialog-confirm-btn,
-.endpoint-toggle-btn,
-.tab-btn,
-.code-copy-btn,
-.copy-response-btn,
-.copy-curl-btn,
-.dialog-cancel-btn,
-.copy-base-url-btn {
-  position: relative;
-  overflow: hidden;
-}
-
-/* BTS-styled buttons */
-.bts-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, var(--primary), #8a4fe0);
-  color: white;
-  border-radius: 50px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  position: relative;
-  overflow: hidden;
+  border-radius: 50px; /* Pill shape */
+  font-weight: 500;
   transition: all 0.3s var(--transition-bezier);
-  box-shadow: 0 4px 15px rgba(161, 98, 247, 0.3);
-  text-transform: uppercase;
-  font-size: 0.9rem;
 }
 
-.bts-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(161, 98, 247, 0.4);
-}
-
-.bts-btn:active {
-  transform: translateY(0);
-}
-
-.bts-btn::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transform: translateX(-100%);
-  transition: transform 0.6s;
-}
-
-.bts-btn:hover::before {
-  transform: translateX(100%);
-}
-
-/* Update the gradient button to use the ripple effect */
 .gradient-btn {
   background: linear-gradient(135deg, var(--primary), var(--secondary));
   color: white;
-  border-radius: 50px;
-  font-weight: 600;
-  box-shadow: 0 4px 15px rgba(161, 98, 247, 0.3);
-  position: relative;
-  overflow: hidden;
+  box-shadow: 0 0 6px rgba(161, 98, 247, 0.7), 0 0 10px rgba(255, 143, 180, 0.5);
 }
 
-.gradient-btn::after {
-  content: "";
-  display: block;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 10%, transparent 10.01%);
-  background-repeat: no-repeat;
-  background-position: 50%;
-  transform: scale(10, 10);
-  opacity: 0;
-  transition: transform 0.5s, opacity 1s;
-}
-
-.gradient-btn:active::after {
-  transform: scale(0, 0);
-  opacity: 0.3;
-  transition: 0s;
+.gradient-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 8px rgba(161, 98, 247, 0.9), 0 0 20px rgba(161, 98, 247, 0.6),
+    0 0 15px rgba(255, 143, 180, 0.7);
 }
 
 .telegram-btn {
   background: var(--telegram);
   color: white;
+  box-shadow: 0 0 8px rgba(0, 136, 204, 0.7);
 }
 
 .telegram-btn:hover {
   background: #0099e6;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 136, 204, 0.3);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 12px rgba(0, 136, 204, 0.8), 0 0 24px rgba(0, 136, 204, 0.5);
 }
 
 /* Markdown Content */
@@ -471,14 +384,14 @@ a {
   font-family: "Fira Code", monospace;
   background: rgba(0, 0, 0, 0.2);
   padding: 0.2em 0.4em;
-  border-radius: 3px;
+  border-radius: 6px; /* More curve */
   font-size: 0.9em;
 }
 
 .markdown-content pre {
   background: rgba(0, 0, 0, 0.2);
   padding: 1em;
-  border-radius: 8px;
+  border-radius: 16px; /* More curve */
   overflow-x: auto;
   margin-bottom: 1em;
 }
@@ -501,7 +414,7 @@ a {
 .endpoint-card {
   background: rgba(26, 26, 36, 0.6);
   border: 1px solid rgba(161, 98, 247, 0.1); /* BTS Purple */
-  border-radius: 8px;
+  border-radius: 24px; /* More curve */
   overflow: hidden;
   transition: all 0.3s var(--transition-bezier);
   box-shadow: var(--card-shadow);
@@ -511,6 +424,7 @@ a {
 .endpoint-card:hover {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   border-color: rgba(161, 98, 247, 0.2); /* BTS Purple */
+  transform: translateY(-2px);
 }
 
 .endpoint-header {
@@ -538,7 +452,7 @@ a {
   font-size: 0.75rem;
   font-weight: 600;
   padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+  border-radius: 8px; /* More curve */
   margin-right: 0.75rem;
   text-transform: uppercase;
 }
@@ -586,7 +500,7 @@ a {
   justify-content: center;
   width: 28px;
   height: 28px;
-  border-radius: 4px;
+  border-radius: 10px; /* More curve */
   background: rgba(161, 98, 247, 0.1); /* BTS Purple */
   color: var(--text-secondary);
   transition: all 0.2s var(--transition-bezier);
@@ -621,7 +535,7 @@ a {
 /* Tabs Styles */
 .endpoint-tabs {
   border: 1px solid rgba(161, 98, 247, 0.1); /* BTS Purple */
-  border-radius: 6px;
+  border-radius: 16px; /* More curve */
   overflow: hidden;
 }
 
@@ -693,7 +607,7 @@ a {
 /* Parameters Table */
 .parameters-table-container {
   overflow-x: auto;
-  border-radius: 6px;
+  border-radius: 16px; /* More curve */
   border: 1px solid rgba(161, 98, 247, 0.1); /* BTS Purple */
 }
 
@@ -742,7 +656,7 @@ a {
 }
 
 .response-example {
-  border-radius: 6px;
+  border-radius: 16px; /* More curve */
   overflow: hidden;
   border: 1px solid rgba(161, 98, 247, 0.1); /* BTS Purple */
 }
@@ -760,7 +674,7 @@ a {
   display: inline-flex;
   align-items: center;
   padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+  border-radius: 8px; /* More curve */
   font-size: 0.6875rem;
   font-weight: 600;
 }
@@ -796,7 +710,7 @@ a {
 /* Code Block Container */
 .code-block-container {
   position: relative;
-  border-radius: 6px;
+  border-radius: 16px; /* More curve */
   overflow: hidden;
   border: 1px solid rgba(161, 98, 247, 0.1); /* BTS Purple */
   background: rgba(0, 0, 0, 0.1);
@@ -814,7 +728,7 @@ a {
   right: 0.375rem;
   padding: 0.25rem 0.375rem;
   background: rgba(161, 98, 247, 0.15); /* BTS Purple */
-  border-radius: 4px;
+  border-radius: 8px; /* More curve */
   color: var(--text-secondary);
   font-size: 0.6875rem;
   transition: all 0.2s var(--transition-bezier);
@@ -847,7 +761,7 @@ a {
 .parameter-row {
   margin-bottom: 0.875rem;
   border: 1px solid rgba(161, 98, 247, 0.1); /* BTS Purple */
-  border-radius: 6px;
+  border-radius: 16px; /* More curve */
   overflow: hidden;
 }
 
@@ -878,7 +792,7 @@ a {
   color: var(--primary);
   background: rgba(161, 98, 247, 0.1); /* BTS Purple */
   padding: 0.125rem 0.375rem;
-  border-radius: 4px;
+  border-radius: 8px; /* More curve */
   margin-left: 0.5rem;
 }
 
@@ -899,7 +813,7 @@ a {
   border: 1px solid rgba(161, 98, 247, 0.15); /* BTS Purple */
   color: var(--text);
   padding: 0.5rem 0.625rem;
-  border-radius: 4px;
+  border-radius: 12px; /* More curve */
   font-family: "Fira Code", monospace;
   font-size: 0.8125rem;
   transition: all 0.2s var(--transition-bezier);
@@ -922,7 +836,7 @@ a {
   border: 1px solid rgba(161, 98, 247, 0.15); /* BTS Purple */
   color: var(--text);
   padding: 0.5rem 0.625rem;
-  border-radius: 4px;
+  border-radius: 12px; /* More curve */
   font-family: "Poppins", "Inter", sans-serif; /* Updated font */
   font-size: 0.8125rem;
   transition: all 0.2s var(--transition-bezier);
@@ -942,7 +856,7 @@ a {
 
 .code-editor-container {
   position: relative;
-  border-radius: 6px;
+  border-radius: 16px; /* More curve */
   overflow: hidden;
   border: 1px solid rgba(161, 98, 247, 0.1); /* BTS Purple */
 }
@@ -971,19 +885,20 @@ a {
   background: var(--primary);
   color: white;
   padding: 0.625rem 1.25rem;
-  border-radius: 4px;
+  border-radius: 50px; /* Pill shape */
   font-weight: 500;
   transition: all 0.2s var(--transition-bezier);
   width: 100%;
   max-width: 180px;
   margin-bottom: 1.25rem;
   font-size: 0.875rem;
+  box-shadow: 0 0 8px rgba(161, 98, 247, 0.6); /* Neon glow */
 }
 
 .execute-btn:hover {
   background: #8a4fe0; /* Slightly darker BTS Purple */
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(161, 98, 247, 0.3); /* BTS Purple */
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 12px rgba(161, 98, 247, 0.8), 0 0 24px rgba(161, 98, 247, 0.5);
 }
 
 .execute-btn:active {
@@ -998,7 +913,7 @@ a {
 
 .try-it-response {
   border: 1px solid rgba(161, 98, 247, 0.1); /* BTS Purple */
-  border-radius: 6px;
+  border-radius: 16px; /* More curve */
   overflow: hidden;
 }
 
@@ -1020,7 +935,7 @@ a {
   display: inline-flex;
   align-items: center;
   padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+  border-radius: 8px; /* More curve */
   font-size: 0.6875rem;
   font-weight: 600;
   margin-left: auto;
@@ -1068,7 +983,7 @@ a {
   right: 0.375rem;
   padding: 0.25rem 0.375rem;
   background: rgba(161, 98, 247, 0.15); /* BTS Purple */
-  border-radius: 4px;
+  border-radius: 8px; /* More curve */
   color: var(--text-secondary);
   font-size: 0.6875rem;
   transition: all 0.2s var(--transition-bezier);
@@ -1083,7 +998,7 @@ a {
 .body-tabs {
   display: flex;
   background: rgba(0, 0, 0, 0.15);
-  border-radius: 4px 4px 0 0;
+  border-radius: 12px 12px 0 0; /* More curve */
   overflow: hidden;
   border: 1px solid rgba(161, 98, 247, 0.1); /* BTS Purple */
   border-bottom: none;
@@ -1104,7 +1019,7 @@ a {
 
 .body-content {
   border: 1px solid rgba(161, 98, 247, 0.1); /* BTS Purple */
-  border-radius: 0 0 4px 4px;
+  border-radius: 0 0 12px 12px; /* More curve */
 }
 
 .body-pane {
@@ -1120,7 +1035,7 @@ a {
   text-align: center;
   padding: 2rem 1rem;
   background: rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  border-radius: 20px; /* More curve */
   border: 1px solid rgba(161, 98, 247, 0.1); /* BTS Purple */
   display: flex;
   flex-direction: column;
@@ -1408,7 +1323,7 @@ a {
 
 .dialog-container {
   background: var(--surface);
-  border-radius: 8px;
+  border-radius: 24px; /* More curve */
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   width: 90%;
   max-width: 500px;
@@ -1449,7 +1364,7 @@ a {
 .dialog-close-btn {
   width: 28px;
   height: 28px;
-  border-radius: 4px;
+  border-radius: 10px; /* More curve */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1485,7 +1400,7 @@ a {
   display: flex;
   align-items: center;
   padding: 0.75rem;
-  border-radius: 6px;
+  border-radius: 16px; /* More curve */
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(161, 98, 247, 0.1); /* BTS Purple */
   cursor: pointer;
@@ -1549,7 +1464,7 @@ a {
 
 .dialog-cancel-btn {
   padding: 0.5rem 1rem;
-  border-radius: 4px;
+  border-radius: 50px; /* Pill shape */
   background: rgba(255, 255, 255, 0.1);
   color: var(--text-secondary);
   font-weight: 500;
@@ -1563,17 +1478,18 @@ a {
 
 .dialog-confirm-btn {
   padding: 0.5rem 1rem;
-  border-radius: 4px;
+  border-radius: 50px; /* Pill shape */
   background: var(--primary);
   color: white;
   font-weight: 500;
   transition: all 0.2s var(--transition-bezier);
+  box-shadow: 0 0 8px rgba(161, 98, 247, 0.6); /* Neon glow */
 }
 
 .dialog-confirm-btn:hover {
   background: #8a4fe0; /* Slightly darker BTS Purple */
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(161, 98, 247, 0.3); /* BTS Purple */
+  transform: translateY(-2px);
+  box-shadow: 0 0 12px rgba(161, 98, 247, 0.8), 0 0 24px rgba(161, 98, 247, 0.5);
 }
 
 .dialog-confirm-btn:disabled {
@@ -1601,7 +1517,7 @@ a {
   align-items: center;
   justify-content: center;
   background: rgba(161, 98, 247, 0.1); /* BTS Purple */
-  border-radius: 0 4px 4px 0;
+  border-radius: 0 12px 12px 0; /* More curve */
   color: var(--text-secondary);
   transition: all 0.2s var(--transition-bezier);
 }
@@ -1609,22 +1525,4 @@ a {
 .input-select-btn:hover {
   background: rgba(161, 98, 247, 0.2); /* BTS Purple */
   color: var(--text);
-}
-
-/* Add BTS logo watermark to cards */
-.endpoint-card::before {
-  content: "BTS";
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  font-size: 2rem;
-  font-weight: 900;
-  color: rgba(161, 98, 247, 0.07);
-  pointer-events: none;
-  z-index: 0;
-  font-family: "Poppins", sans-serif;
-}
-
-.endpoint-card {
-  position: relative;
 }
