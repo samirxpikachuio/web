@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", function () {
     const apiDescription = document.getElementById("api-description");
     const categoryChips = document.getElementById("category-chips");
